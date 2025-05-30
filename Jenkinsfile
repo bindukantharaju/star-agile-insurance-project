@@ -2,20 +2,45 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repository') {
+        stage('Git Clone') {
             steps {
-                checkout([$class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'git@github.com:bindukantharju/resubmissionrepo-banking-deployment12.git',
-                        credentialsId: 'bindukantharju-key'
-                    ]]
-                ])
-                sh 'ls -la'
+                git url: 'https://github.com/bindukantharaju/star-agile-insurance-project.git', branch: 'master'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t bindukantharaju/staragileprojectfinance:v1 ."
+                sh "docker images"
+            }
+        }
+
+        stage('Docker Login and Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh '''
+                        echo "$PASS" | docker login -u "$USER" --password-stdin
+                        docker push bindukantharaju/staragileprojectfinance:v1
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    docker rm -f my-First-container2211 || true
+                    docker run -itd --name my-First-container2211 -p 8083:8080 bindukantharaju/staragileprojectfinance:v1
+                '''
             }
         }
     }
 }
+
 
 
 
