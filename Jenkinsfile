@@ -10,32 +10,29 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t bindukantharaju/staragileprojectfinance:v1 ."
-                sh "docker images"
+                sh 'sudo docker build -t bindukantharaju/staragileprojectfinance:v1 .'
+                sh 'sudo docker images'
             }
         }
 
         stage('Docker Login and Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'USER',
-                    passwordVariable: 'PASS'
-                )]) {
+                withCredentials([string(credentialsId: 'dockerhubpass', variable: 'DOCKERHUB_PASS')]) {
                     sh '''
-                        echo "$PASS" | docker login -u "$USER" --password-stdin
-                        docker push bindukantharaju/staragileprojectfinance:v1
+                        set +x
+                        echo "$DOCKERHUB_PASS" | sudo docker login -u bindukantharaju --password-stdin
+                        set -x
+                        sudo docker push bindukantharaju/staragileprojectfinance:v1
                     '''
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Container') {
             steps {
                 sh '''
-                    docker rm -f my-First-container2211 || true
-                    docker run -itd --name my-First-container2211 -p 8084:8081 bindukantharaju/staragileprojectfinance:v1
-
+                    sudo docker rm -f my-container || true
+                    sudo docker run -itd --name my-container -p 8084:8081 bindukantharaju/staragileprojectfinance:v1
                 '''
             }
         }
