@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                     sudo docker rm -f my-container || true
-                    sudo docker run -itd --name my-container -p 8084:8081 bindukantharaju/staragileprojectfinance:v1
+                    sudo docker run -itd --name my-container -p 8081:8081 bindukantharaju/staragileprojectfinance:v1
                 '''
             }
         }
