@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f my-First-container2211 || true
-                    docker run -itd --name my-First-container2211 -p 8083:8080 bindukantharaju/staragileprojectfinance:v1
+                    docker run -itd --name my-First-container2211 -p 8083:8081 bindukantharaju/staragileprojectfinance:v1
                 '''
             }
         }
